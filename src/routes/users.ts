@@ -1,19 +1,20 @@
 import  jwt  from 'jsonwebtoken';
-import auth from '../middleware/auth'
+import  {auth ,authUpdate } from '../middleware/auth'
 import express  from 'express';
 import _ from 'lodash'
 import bcrypt from 'bcrypt'
 import {User , validateUser, userSchema } from '../models/user'
 import userX from '../models/user'
 import config from 'config';
+import admin from '../middleware/admin';
 
 const router = express.Router();
 
 router.get('/', getUsers); // ok
 router.get('/:id',getUser ); // ok
 router.post('/signup', signup); // ok
-router.put('/update/:id', updateUser); //norm  ~~> but you can't change just one of the element
-router.delete('/delete/:id', deleteUser) // ok
+router.put('/update/:id',[auth,authUpdate],updateUser); //norm  ~~> but you can't change just one of the element
+router.delete('/delete/:id',[auth, admin],deleteUser) // ok
 
 
 
@@ -22,7 +23,7 @@ router.delete('/delete/:id', deleteUser) // ok
 
 // functions
 async function getUsers(req : express.Request , res : express.Response): Promise<void> {
-    const user = await User.find().sort('name');
+    const user = await User.find().sort('name').select('name').select('username');
     res.send(user);
     
 }
@@ -46,6 +47,7 @@ async function signup(req : express.Request , res : express.Response): Promise<a
     let infoUser = _.pick(req.body, ['name','username', 'email','password']);
 
     let user = new User(infoUser);
+    user.role = 'user' ;
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(user.password, salt);
 

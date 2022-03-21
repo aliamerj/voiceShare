@@ -21,9 +21,9 @@ const config_1 = __importDefault(require("config"));
 const router = express_1.default.Router();
 router.get('/', getVoices); // ok
 router.get('/:id', getVoice); //  ok
-router.post('/newVoice', auth_1.auth, postVoice); // ok
-router.put('/update/:id', auth_1.auth, auth_1.authUpdate, updateVoice); // use can update his vice
-router.delete('/delete/:id', auth_1.auth, deleteVoice); //
+router.post('/newVoice', [auth_1.auth], postVoice); // ok
+router.put('/update/:id', [auth_1.auth, auth_1.authUpdate], updateVoice); // ok
+router.delete('/delete/:id', [auth_1.auth, auth_1.authUpdate], deleteVoice); // ok
 // functions
 function getVoices(req, res) {
     return __awaiter(this, void 0, void 0, function* () {

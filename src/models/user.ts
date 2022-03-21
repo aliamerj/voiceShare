@@ -46,7 +46,7 @@ export const userSchema = new mongoose.Schema(
     }
 );
  export default userSchema.methods.generateAuthToken = function(): string{
-    const token =jwt.sign( {_id : this._id}, config.get('jwtPrivateKey'));
+    const token =jwt.sign( {_id : this._id , role : this.role }, config.get('jwtPrivateKey'));
 
     return token;
 

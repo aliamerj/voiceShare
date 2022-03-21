@@ -45,7 +45,7 @@ exports.userSchema = new mongoose_1.default.Schema({
     }
 });
 exports.default = exports.userSchema.methods.generateAuthToken = function () {
-    const token = jsonwebtoken_1.default.sign({ _id: this._id }, config_1.default.get('jwtPrivateKey'));
+    const token = jsonwebtoken_1.default.sign({ _id: this._id, role: this.role }, config_1.default.get('jwtPrivateKey'));
     return token;
 };
 function validateUser(user) {

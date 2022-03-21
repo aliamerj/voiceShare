@@ -12,20 +12,22 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const auth_1 = require("../middleware/auth");
 const express_1 = __importDefault(require("express"));
 const lodash_1 = __importDefault(require("lodash"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const user_1 = require("../models/user");
+const admin_1 = __importDefault(require("../middleware/admin"));
 const router = express_1.default.Router();
 router.get('/', getUsers); // ok
 router.get('/:id', getUser); // ok
 router.post('/signup', signup); // ok
-router.put('/update/:id', updateUser); //norm  ~~> but you can't change just one of the element
-router.delete('/delete/:id', deleteUser); // ok
+router.put('/update/:id', [auth_1.auth, auth_1.authUpdate], updateUser); //norm  ~~> but you can't change just one of the element
+router.delete('/delete/:id', [auth_1.auth, admin_1.default], deleteUser); // ok
 // functions
 function getUsers(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        const user = yield user_1.User.find().sort('name');
+        const user = yield user_1.User.find().sort('name').select('name').select('username').select('-id');
         res.send(user);
     });
 }
@@ -50,6 +52,7 @@ function signup(req, res) {
             return res.status(400).send('email already registered ');
         let infoUser = lodash_1.default.pick(req.body, ['name', 'username', 'email', 'password']);
         let user = new user_1.User(infoUser);
+        user.role = 'user';
         const salt = yield bcrypt_1.default.genSalt(10);
         user.password = yield bcrypt_1.default.hash(user.password, salt);
         try {

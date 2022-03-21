@@ -9,9 +9,9 @@ const router = express.Router();
 
 router.get('/', getVoices); // ok
 router.get('/:id',getVoice ); //  ok
-router.post('/newVoice',auth, postVoice); // ok
-router.put('/update/:id', auth,authUpdate,updateVoice); // ok
-router.delete('/delete/:id', auth,authUpdate, deleteVoice) // 
+router.post('/newVoice',[auth],postVoice); // ok
+router.put('/update/:id', [auth,authUpdate],updateVoice); // ok
+router.delete('/delete/:id', [auth,authUpdate], deleteVoice) // ok
 
 
 // functions
